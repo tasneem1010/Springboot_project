@@ -1,36 +1,34 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public Page<User> getUsers(Pageable pageable) {
+        return userService.findAll(pageable);
+    }
+
+    @GetMapping("/search")
+    public Page<User> findUserByName(String name, Pageable pageable) {
+        return userService.findUserByName(name, pageable);
     }
 
     @PostMapping
     public User createUser(@RequestBody User user) {
-        user.setPassword(hashPassword(user.getPassword()));
-        return userRepository.save(user);
-    }
-    public static String hashPassword(String plainPassword) {
-        //TODO hash password
-//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//        return encoder.encode(plainPassword);
-        return plainPassword;
+        return userService.createUser(user);
     }
 
 
