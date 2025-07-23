@@ -19,12 +19,24 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
-    //        TODO hash password
+
     public User createUser(User user) {
+        //TODO hash password
+        //TODO return custom response?
+        if(userExists(user))return null;
         return userRepository.save(user);
+    }
+
+    public User updateUser(User user) {
+        if(userExists(user))return null;
+        //TODO implement update user
+        return user;
     }
 
     public Page<User> findUserByName(String name, Pageable pageable) {
         return userRepository.findByName(name, pageable);
+    }
+    public boolean userExists(User user) {
+        return userRepository.findByEmail(user.getEmail())!=null;
     }
 }
