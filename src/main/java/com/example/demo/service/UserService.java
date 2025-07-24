@@ -29,39 +29,44 @@ public class UserService {
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Email", null);
         }
-        if (userExistsByEmail(user))
+        if (emailExists(user))
             return ApiResponse.buildResponse(HttpStatus.CONFLICT, false, "User Already Exists", userRepository.findByEmail(user.getEmail()));
         return ApiResponse.buildResponse(HttpStatus.CREATED, true, "User Added Successfully", userRepository.save(user));
     }
-
-    public ResponseEntity<ApiResponse<User>> updateUser(User user) {
-        if (!userExists(user)) {
-            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Does Not Exist", userRepository.save(user));
+    public ResponseEntity<ApiResponse<User>> updateUser(User input) {
+        // Check if user exists
+        User existingUser = userRepository.findById(input.getId());
+        if (existingUser == null) {
+            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Does Not Exist", null);
         }
-        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+        // Validate input fields
+        if (input.getEmail() == null || input.getEmail().isEmpty()) {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Email", null);
         }
-        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+        if (input.getPassword() == null || input.getPassword().isEmpty()) {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Password", null);
         }
-        if (user.getName() == null || user.getName().isEmpty()) {
+        if (input.getName() == null || input.getName().isEmpty()) {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Name", null);
         }
-        User res = userRepository.findById(user.getId());
-        if (userExistsByEmail(user)) return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST,false,"Email Already Exists",null); //return user?
-        res.setPassword(user.getPassword());
-        res.setName(user.getName());
-        res.setEmail(user.getEmail());
-        userRepository.save(res);
-        return ApiResponse.buildResponse(HttpStatus.OK, true, "User Updated Successfully", res);
-
+        // Check if email is being changed and if new email already exists for another user
+        User userWithEmail = userRepository.findByEmail(input.getEmail());
+        if (userWithEmail != null && userWithEmail.getId() != input.getId()) {
+            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Email Already Exists", null);
+        }
+        // Update fields
+        existingUser.setPassword(input.getPassword()); // TODO: hash password if needed
+        existingUser.setName(input.getName());
+        existingUser.setEmail(input.getEmail());
+        userRepository.save(existingUser);
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "User Updated Successfully", existingUser);
     }
 
     public ResponseEntity<ApiResponse<Page<User>>> findUserByName(String name, Pageable pageable) {
-        return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", userRepository.findByName(name, pageable));
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", userRepository.findByNameAndDeleted(name, false, pageable));
     }
 
-    public boolean userExistsByEmail(User user) {
+    public boolean emailExists(User user) {
         return userRepository.findByEmail(user.getEmail()) != null;
     }
 
@@ -69,14 +74,18 @@ public class UserService {
         return userRepository.findById(user.getId()) != null;
     }
 
-    public ResponseEntity<ApiResponse<User>> delete(User user) {
-        if (user.getEmail() == null || user.getEmail().isEmpty()) {
-            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Email", null);
-        }
-        if (userExistsByEmail(user)) {
-            userRepository.delete(user);
-            return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", user);
+    public ResponseEntity<ApiResponse<User>> delete(int id) {
+        User user = userRepository.findById(id);
+        if (user != null) {
+            if (user.isDeleted()) return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Already Deleted", user);
+            user.setDeleted(true);
+            userRepository.save(user);
+            return ApiResponse.buildResponse(HttpStatus.OK, true, "User Was -Soft- Deleted", user);
         }
         return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Does Not Exist", user);
+    }
+    public ResponseEntity<ApiResponse<Page<User>>> getDeletedUsers(Pageable pageable) {
+        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",userRepository.findByDeleted(true, pageable));
+
     }
 }

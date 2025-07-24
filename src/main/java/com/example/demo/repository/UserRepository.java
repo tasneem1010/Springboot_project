@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    Page<User> findByName(String name, Pageable pageable);
-
     User findByEmail(String email);
     Page<User> findByDeleted(boolean deleted, Pageable pageable);
     User findById(int id);
+    Page<User> findByNameAndDeleted(String name, Boolean deleted, Pageable pageable);
+
 }
