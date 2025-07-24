@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<ApiResponse<User>> DeleteUser(@RequestParam Integer id) {
+    public ResponseEntity<ApiResponse<User>> deleteUser(@RequestParam Integer id) {
         return userService.delete(id);
     }
     @GetMapping("/deleted")
