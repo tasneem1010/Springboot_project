@@ -31,5 +31,13 @@ public class UserController {
         return userService.createUser(user);
     }
 
+    @PutMapping
+    public ResponseEntity<ApiResponse<User>> updateUser(@RequestBody User user) {
+        return userService.updateUser(user);
+    }
 
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<User>> DeleteUser(@RequestBody User user) {
+        return userService.delete(user);
+    }
 }

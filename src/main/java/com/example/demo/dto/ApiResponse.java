@@ -13,19 +13,20 @@ import java.time.Instant;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApiResponse <T>{
+public class ApiResponse<T> {
     private String message;
-    private T data;
     boolean success;
     Instant timeStamp;
-    public ApiResponse( boolean success, String message, T data) {
-        this.message = message;
-        this.data = data;
-        this.success = success;
+    private T data;
+
+    public ApiResponse(boolean success, String message, T data) {
         this.timeStamp = Instant.now();
+        this.message = message;
+        this.success = success;
+        this.data = data;
     }
 
-    public static <T> ResponseEntity<ApiResponse<T>> buildResponse(HttpStatus status, boolean success,String message, T data) {
-        return ResponseEntity.status(status).body(new ApiResponse<>(success,message, data));
+    public static <T> ResponseEntity<ApiResponse<T>> buildResponse(HttpStatus status, boolean success, String message, T data) {
+        return ResponseEntity.status(status).body(new ApiResponse<>(success, message, data));
     }
 }

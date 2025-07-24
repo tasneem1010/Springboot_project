@@ -1,11 +1,11 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-
-import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.Instant;
 
 @Data // Includes @ToString, @EqualsAndHashCode, @Getter, @Setter and @RequiredArgsConstructor
 @NoArgsConstructor
@@ -17,9 +17,12 @@ public class User {
     private int id;
     private String name;
     private String email;
-    // Contains timezone info (Z)
-    private Instant createdDate = Instant.now();
-    private Instant updatedDate = null;
     private String password;
+    // Contains timezone info (Z)
+    @Column(updatable = false, insertable = false, nullable = false)
+    private Instant createdDate;
+    @Column(updatable = false, insertable = false, nullable = false)
+    private Instant updatedDate;
+    private boolean deleted;
 }
 
