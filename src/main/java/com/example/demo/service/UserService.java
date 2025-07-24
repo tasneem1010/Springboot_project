@@ -20,7 +20,7 @@ public class UserService {
 
     public ResponseEntity<ApiResponse<Page<User>>> findAll(Pageable pageable) {
         Page<User> users = userRepository.findAll(pageable);
-        return ApiResponse.buildResponse(HttpStatus.OK,"Success", users);
+        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success", users);
     }
     public ResponseEntity<ApiResponse<User>> createUser(User user) {
         //TODO hash password
@@ -28,18 +28,18 @@ public class UserService {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST,"Enter a Valid Email",null);
         }
         if (userExists(user))
-            return ApiResponse.buildResponse(HttpStatus.CONFLICT,"User Already Exists",user);
-        return ApiResponse.buildResponse(HttpStatus.CREATED,"User Added Successfully",userRepository.save(user));
+            return ApiResponse.buildResponse(HttpStatus.CONFLICT,false,"User Already Exists",user);
+        return ApiResponse.buildResponse(HttpStatus.CREATED,true,"User Added Successfully",userRepository.save(user));
     }
 
     public ResponseEntity<ApiResponse<User>> updateUser(User user) {
         if (userExists(user)) return null;
         //TODO implement update user
-        return ApiResponse.buildResponse(HttpStatus.CREATED,"User Added Successfully",userRepository.save(user));
+        return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST,false,"User Does Not Exist",userRepository.save(user));
     }
 
     public ResponseEntity<ApiResponse<Page<User>>> findUserByName(String name, Pageable pageable) {
-        return ApiResponse.buildResponse(HttpStatus.OK,"Success",userRepository.findByName(name, pageable));
+        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",userRepository.findByName(name, pageable));
     }
 
     public boolean userExists(User user) {
