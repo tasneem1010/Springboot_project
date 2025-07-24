@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.dto.ApiResponse;
 import com.example.demo.dto.UserRequestDTO;
 import com.example.demo.dto.UserResponseDTO;
-import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.dto.UserListResponseDTO;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
@@ -37,7 +36,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(@PathVariable int id, @Valid @RequestBody UserUpdateDTO userDto) {
+    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(@PathVariable int id, @Valid @RequestBody UserRequestDTO userDto) {
         return userService.updateUser(id, userDto);
     }
 

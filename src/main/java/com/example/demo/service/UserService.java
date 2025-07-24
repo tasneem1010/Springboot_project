@@ -3,7 +3,6 @@ package com.example.demo.service;
 import com.example.demo.dto.ApiResponse;
 import com.example.demo.dto.UserRequestDTO;
 import com.example.demo.dto.UserResponseDTO;
-import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.dto.UserListResponseDTO;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
@@ -32,9 +31,7 @@ public class UserService {
     }
 
     public ResponseEntity<ApiResponse<UserResponseDTO>> createUser(UserRequestDTO userDto) {
-        if (userDto.getEmail() == null || userDto.getEmail().isEmpty()) {
-            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Email", null);
-        }
+
         if (userRepository.findByEmail(userDto.getEmail()) != null)
             return ApiResponse.buildResponse(HttpStatus.CONFLICT, false, "User Already Exists", null);
         User user = new User();
@@ -46,7 +43,7 @@ public class UserService {
         return ApiResponse.buildResponse(HttpStatus.CREATED, true, "User Added Successfully", toUserResponseDTO(saved));
     }
 
-    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(int id, UserUpdateDTO input) {
+    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(int id, UserRequestDTO input) {
         User existingUser = userRepository.findById(id);
         if (existingUser == null) {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Does Not Exist", null);
