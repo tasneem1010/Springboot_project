@@ -25,7 +25,7 @@ public class UserService {
     public ResponseEntity<ApiResponse<User>> createUser(User user) {
         //TODO hash password
         if(user.getEmail() ==null || user.getEmail().isEmpty()){
-            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST,"Enter a Valid Email",null);
+            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST,false,"Enter a Valid Email",null);
         }
         if (userExists(user))
             return ApiResponse.buildResponse(HttpStatus.CONFLICT,false,"User Already Exists",user);
