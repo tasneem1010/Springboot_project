@@ -1,9 +1,12 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.ApiResponse;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,28 +18,28 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Page<User> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
+    public ResponseEntity<ApiResponse<Page<User>>> findAll(Pageable pageable) {
+        Page<User> users = userRepository.findAll(pageable);
+        return ApiResponse.buildResponse(HttpStatus.OK,"Success", users);
     }
-
-
-    public User createUser(User user) {
+    public ResponseEntity<ApiResponse<User>> createUser(User user) {
         //TODO hash password
-        //TODO return custom response?
-        if(userExists(user))return null;
-        return userRepository.save(user);
+        if (userExists(user))
+            return ApiResponse.buildResponse(HttpStatus.CONFLICT,"User Already Exists",user);
+        return ApiResponse.buildResponse(HttpStatus.CREATED,"User Added Successfully",userRepository.save(user));
     }
 
-    public User updateUser(User user) {
-        if(userExists(user))return null;
+    public ResponseEntity<ApiResponse<User>> updateUser(User user) {
+        if (userExists(user)) return null;
         //TODO implement update user
-        return user;
+        return ApiResponse.buildResponse(HttpStatus.CREATED,"User Added Successfully",userRepository.save(user));
     }
 
-    public Page<User> findUserByName(String name, Pageable pageable) {
-        return userRepository.findByName(name, pageable);
+    public ResponseEntity<ApiResponse<Page<User>>> findUserByName(String name, Pageable pageable) {
+        return ApiResponse.buildResponse(HttpStatus.OK,"Success",userRepository.findByName(name, pageable));
     }
+
     public boolean userExists(User user) {
-        return userRepository.findByEmail(user.getEmail())!=null;
+        return userRepository.findByEmail(user.getEmail()) != null;
     }
 }
