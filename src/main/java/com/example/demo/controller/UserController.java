@@ -17,12 +17,10 @@ public class UserController {
     }
 
     @GetMapping
-    public Page<User> getUsers(Pageable pageable) {
-        return userService.findAll(pageable);
-    }
-
-    @GetMapping("/search")
-    public Page<User> findUserByName(String name, Pageable pageable) {
+    public Page<User> getUsers(@RequestParam(required = false) String name, Pageable pageable) {
+        // Return all users
+        if (name == null) return userService.findAll(pageable);
+        // Return name match
         return userService.findUserByName(name, pageable);
     }
 

@@ -2,10 +2,14 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.Instant;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
+@Data // Includes @ToString, @EqualsAndHashCode, @Getter, @Setter and @RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class User {
     @Id
@@ -13,8 +17,9 @@ public class User {
     private int id;
     private String name;
     private String email;
-    private LocalDate createdDate;
-    private LocalDate updatedDate;
+    // Contains timezone info (Z)
+    private Instant createdDate = Instant.now();
+    private Instant updatedDate = null;
     private String password;
 }
 
