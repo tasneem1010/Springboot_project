@@ -1,12 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ApiResponse;
-import com.example.demo.dto.UserRequestDTO;
-import com.example.demo.dto.UserResponseDTO;
-import com.example.demo.dto.UserListResponseDTO;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
-import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +19,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<UserListResponseDTO>> getUsers(@RequestParam(required = false) String name, Pageable pageable) {
+    public ResponseEntity<ApiResponse<Page<User>>> getUsers(@RequestParam(required = false) String name, Pageable pageable) {
         // Return all users
         if (name == null) return userService.findAll(pageable);
         // Return name match
@@ -31,21 +27,21 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<UserResponseDTO>> createUser(@Valid @RequestBody UserRequestDTO userDto) {
-        return userService.createUser(userDto);
+    public ResponseEntity<ApiResponse<User>> createUser(@RequestBody User user) {
+        return userService.createUser(user);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(@PathVariable int id, @Valid @RequestBody UserRequestDTO userDto) {
-        return userService.updateUser(id, userDto);
+    @PutMapping
+    public ResponseEntity<ApiResponse<User>> updateUser(@RequestBody User user) {
+        return userService.updateUser(user);
     }
 
     @DeleteMapping
-    public ResponseEntity<ApiResponse<UserResponseDTO>> deleteUser(@RequestParam Integer id) {
+    public ResponseEntity<ApiResponse<User>> deleteUser(@RequestParam Integer id) {
         return userService.delete(id);
     }
     @GetMapping("/deleted")
-    public ResponseEntity<ApiResponse<UserListResponseDTO>> getDeletedUsers(Pageable pageable) {
+    public ResponseEntity<ApiResponse<Page<User>>> getDeletedUsers(Pageable pageable) {
         return userService.getDeletedUsers(pageable);
     }
 }

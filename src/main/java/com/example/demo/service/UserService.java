@@ -1,9 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.ApiResponse;
-import com.example.demo.dto.UserRequestDTO;
-import com.example.demo.dto.UserResponseDTO;
-import com.example.demo.dto.UserListResponseDTO;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.data.domain.Page;
@@ -21,57 +18,52 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity<ApiResponse<UserListResponseDTO>> findAll(Pageable pageable) {
-        Page<User> users = userRepository.findByDeleted(false, pageable);
-        UserListResponseDTO listDto = new UserListResponseDTO();
-        listDto.setUsers(users.map(this::toUserResponseDTO).getContent());
-        listDto.setTotalPages(users.getTotalPages());
-        listDto.setTotalElements(users.getTotalElements());
-        return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", listDto);
+    public ResponseEntity<ApiResponse<Page<User>>> findAll(Pageable pageable) {
+        // Get all users that are not deleted
+        Page<User> users = userRepository.findByDeleted(false,pageable);
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", users);
     }
 
-    public ResponseEntity<ApiResponse<UserResponseDTO>> createUser(UserRequestDTO userDto) {
-
-        if (userRepository.findByEmail(userDto.getEmail()) != null)
-            return ApiResponse.buildResponse(HttpStatus.CONFLICT, false, "User Already Exists", null);
-        User user = new User();
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
-        user.setPassword(userDto.getPassword());
-        user.setDeleted(false);
-        User saved = userRepository.save(user);
-        return ApiResponse.buildResponse(HttpStatus.CREATED, true, "User Added Successfully", toUserResponseDTO(saved));
+    public ResponseEntity<ApiResponse<User>> createUser(User user) {
+        //TODO hash password
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Email", null);
+        }
+        if (emailExists(user))
+            return ApiResponse.buildResponse(HttpStatus.CONFLICT, false, "User Already Exists", userRepository.findByEmail(user.getEmail()));
+        return ApiResponse.buildResponse(HttpStatus.CREATED, true, "User Added Successfully", userRepository.save(user));
     }
-
-    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(int id, UserRequestDTO input) {
-        User existingUser = userRepository.findById(id);
+    public ResponseEntity<ApiResponse<User>> updateUser(User input) {
+        // Check if user exists
+        User existingUser = userRepository.findById(input.getId());
         if (existingUser == null) {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Does Not Exist", null);
         }
-        if (input.getEmail() != null && !input.getEmail().isEmpty()) {
-            User userWithEmail = userRepository.findByEmail(input.getEmail());
-            if (userWithEmail != null && userWithEmail.getId() != id) {
-                return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Email Already Exists", null);
-            }
-            existingUser.setEmail(input.getEmail());
+        // Validate input fields
+        if (input.getEmail() == null || input.getEmail().isEmpty()) {
+            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Email", null);
         }
-        if (input.getPassword() != null && !input.getPassword().isEmpty()) {
-            existingUser.setPassword(input.getPassword());
+        if (input.getPassword() == null || input.getPassword().isEmpty()) {
+            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Password", null);
         }
-        if (input.getName() != null && !input.getName().isEmpty()) {
-            existingUser.setName(input.getName());
+        if (input.getName() == null || input.getName().isEmpty()) {
+            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Name", null);
         }
+        // Check if email is being changed and if new email already exists for another user
+        User userWithEmail = userRepository.findByEmail(input.getEmail());
+        if (userWithEmail != null && userWithEmail.getId() != input.getId()) {
+            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Email Already Exists", null);
+        }
+        // Update fields
+        existingUser.setPassword(input.getPassword()); // TODO: hash password if needed
+        existingUser.setName(input.getName());
+        existingUser.setEmail(input.getEmail());
         userRepository.save(existingUser);
-        return ApiResponse.buildResponse(HttpStatus.OK, true, "User Updated Successfully", toUserResponseDTO(existingUser));
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "User Updated Successfully", existingUser);
     }
 
-    public ResponseEntity<ApiResponse<UserListResponseDTO>> findUserByName(String name, Pageable pageable) {
-        Page<User> users = userRepository.findByNameAndDeleted(name, false, pageable);
-        UserListResponseDTO listDto = new UserListResponseDTO();
-        listDto.setUsers(users.map(this::toUserResponseDTO).getContent());
-        listDto.setTotalPages(users.getTotalPages());
-        listDto.setTotalElements(users.getTotalElements());
-        return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", listDto);
+    public ResponseEntity<ApiResponse<Page<User>>> findUserByName(String name, Pageable pageable) {
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", userRepository.findByNameAndDeleted(name, false, pageable));
     }
 
     public boolean emailExists(User user) {
@@ -82,33 +74,18 @@ public class UserService {
         return userRepository.findById(user.getId()) != null;
     }
 
-    public ResponseEntity<ApiResponse<UserResponseDTO>> delete(int id) {
+    public ResponseEntity<ApiResponse<User>> delete(int id) {
         User user = userRepository.findById(id);
         if (user != null) {
-            if (user.isDeleted()) return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Already Deleted", toUserResponseDTO(user));
+            if (user.isDeleted()) return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Already Deleted", user);
             user.setDeleted(true);
             userRepository.save(user);
-            return ApiResponse.buildResponse(HttpStatus.OK, true, "User Was -Soft- Deleted", toUserResponseDTO(user));
+            return ApiResponse.buildResponse(HttpStatus.OK, true, "User Was -Soft- Deleted", user);
         }
-        return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Does Not Exist", null);
+        return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Does Not Exist", user);
     }
+    public ResponseEntity<ApiResponse<Page<User>>> getDeletedUsers(Pageable pageable) {
+        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",userRepository.findByDeleted(true, pageable));
 
-    public ResponseEntity<ApiResponse<UserListResponseDTO>> getDeletedUsers(Pageable pageable) {
-        Page<User> users = userRepository.findByDeleted(true, pageable);
-        UserListResponseDTO listDto = new UserListResponseDTO();
-        listDto.setUsers(users.map(this::toUserResponseDTO).getContent());
-        listDto.setTotalPages(users.getTotalPages());
-        listDto.setTotalElements(users.getTotalElements());
-        return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", listDto);
-    }
-
-    private UserResponseDTO toUserResponseDTO(User user) {
-        UserResponseDTO dto = new UserResponseDTO();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-        dto.setCreatedDate(user.getCreatedDate());
-        dto.setUpdatedDate(user.getUpdatedDate());
-        return dto;
     }
 }
