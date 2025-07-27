@@ -24,5 +24,9 @@ public class User {
     @Column(updatable = false, insertable = false, nullable = false)
     private Instant updatedDate;
     private boolean deleted;
+
+    @ManyToOne()
+    @JoinColumn(name = "company_id")
+    private Company company;
 }
 
