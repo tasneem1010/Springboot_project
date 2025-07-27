@@ -22,11 +22,12 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity<ApiResponse<UserListResponseDTO>> findAll(Pageable pageable) {
+    public UserListResponseDTO findAll(Pageable pageable) {
         // Get all users that are not deleted
-        Page<User> users = userRepository.findByDeleted(false, pageable);        List<UserResponseDTO> userResponseDTOs = users.getContent().stream().map(UserResponseDTO::new).toList();
-        UserListResponseDTO liseDto = new UserListResponseDTO(userResponseDTOs,users.getTotalPages(),users.getNumber(), (int) users.getTotalElements());
-        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",liseDto);
+        Page<User> users = userRepository.findByDeleted(false, pageable);
+        List<UserResponseDTO> userResponseDTOs = users.getContent().stream().map(UserResponseDTO::new).toList();
+        return new UserListResponseDTO(userResponseDTOs, users.getTotalPages(), users.getNumber(), (int) users.getTotalElements());
+//        return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", liseDto);
     }
 
     public ResponseEntity<ApiResponse<UserResponseDTO>> createUser(User user) {
@@ -36,8 +37,9 @@ public class UserService {
         }
         if (emailExists(user))
             return ApiResponse.buildResponse(HttpStatus.CONFLICT, false, "User Already Exists", new UserResponseDTO(userRepository.findByEmail(user.getEmail())));
-        return ApiResponse.buildResponse(HttpStatus.CREATED, true, "User Added Successfully",new UserResponseDTO(userRepository.save(user)));
+        return ApiResponse.buildResponse(HttpStatus.CREATED, true, "User Added Successfully", new UserResponseDTO(userRepository.save(user)));
     }
+
     public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(User input) {
         // Check if user exists
         User existingUser = userRepository.findById(input.getId());
@@ -68,10 +70,13 @@ public class UserService {
     }
 
     public ResponseEntity<ApiResponse<UserListResponseDTO>> findUserByName(String name, Pageable pageable) {
+        if(name==null){
+            return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",findAll(pageable));
+        }
         Page<User> users = userRepository.findByNameAndDeleted(name, false, pageable);
         List<UserResponseDTO> userResponseDTOs = users.getContent().stream().map(UserResponseDTO::new).toList();
-        UserListResponseDTO liseDto = new UserListResponseDTO(userResponseDTOs,users.getTotalPages(),users.getNumber(), (int) users.getTotalElements());
-        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",liseDto);
+        UserListResponseDTO liseDto = new UserListResponseDTO(userResponseDTOs, users.getTotalPages(), users.getNumber(), (int) users.getTotalElements());
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", liseDto);
     }
 
     public boolean emailExists(User user) {
@@ -85,18 +90,20 @@ public class UserService {
     public ResponseEntity<ApiResponse<UserResponseDTO>> delete(int id) {
         User user = userRepository.findById(id);
         if (user != null) {
-            if (user.isDeleted()) return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Already Deleted", new UserResponseDTO(user));
+            if (user.isDeleted())
+                return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Already Deleted", new UserResponseDTO(user));
             user.setDeleted(true);
             userRepository.save(user);
             return ApiResponse.buildResponse(HttpStatus.OK, true, "User Was -Soft- Deleted", new UserResponseDTO(user));
         }
         return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Does Not Exist", new UserResponseDTO(user));
     }
+
     public ResponseEntity<ApiResponse<UserListResponseDTO>> getDeletedUsers(Pageable pageable) {
         Page<User> users = userRepository.findByDeleted(true, pageable);
         List<UserResponseDTO> userResponseDTOs = users.getContent().stream().map(UserResponseDTO::new).toList();
-        UserListResponseDTO liseDto = new UserListResponseDTO(userResponseDTOs,users.getTotalPages(),users.getNumber(), (int) users.getTotalElements());
-        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",liseDto);
+        UserListResponseDTO liseDto = new UserListResponseDTO(userResponseDTOs, users.getTotalPages(), users.getNumber(), (int) users.getTotalElements());
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", liseDto);
 
     }
 }

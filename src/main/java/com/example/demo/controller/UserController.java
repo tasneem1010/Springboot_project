@@ -5,7 +5,6 @@ import com.example.demo.dto.UserListResponseDTO;
 import com.example.demo.dto.UserResponseDTO;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +21,6 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<UserListResponseDTO>> getUsers(@RequestParam(required = false) String name, Pageable pageable) {
-        // Return all users
-        if (name == null) return userService.findAll(pageable);
-        // Return name match
         return userService.findUserByName(name, pageable);
     }
 
