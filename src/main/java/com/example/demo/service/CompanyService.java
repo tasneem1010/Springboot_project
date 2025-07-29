@@ -1,7 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.*;
-import com.example.demo.model.Company;
+import com.example.demo.dto.ApiResponse;
+import com.example.demo.dto.CompanyListResponseDTO;
+import com.example.demo.dto.CompanyResponseDTO;
 import com.example.demo.model.Company;
 import com.example.demo.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,23 +17,23 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CompanyService {
-    CompanyRepository companyRepository;
+    private final CompanyRepository companyRepository;
 
     public CompanyListResponseDTO findAll(Pageable pageable) {
         Page<Company> companies = companyRepository.findAll(pageable);
         List<CompanyResponseDTO> companiesList = companies.getContent().stream().map(CompanyResponseDTO::new).toList();
-        return new CompanyListResponseDTO(companiesList,companies.getTotalPages(),companies.getNumber(),(int)companies.getTotalElements());
+        return new CompanyListResponseDTO(companiesList, companies.getTotalPages(), companies.getNumber(), (int) companies.getTotalElements());
 //        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",liseDto);
     }
 
     public ResponseEntity<ApiResponse<CompanyListResponseDTO>> findCompanyByName(String name, Pageable pageable) {
-        if(name == null){
-            return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",findAll(pageable));
+        if (name == null) {
+            return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", findAll(pageable));
         }
-        Page<Company> companies = companyRepository.findByName(name,pageable);
+        Page<Company> companies = companyRepository.findByName(name, pageable);
         List<CompanyResponseDTO> companiesList = companies.getContent().stream().map(CompanyResponseDTO::new).toList();
-        CompanyListResponseDTO liseDto = new CompanyListResponseDTO(companiesList,companies.getTotalPages(),companies.getNumber(),(int)companies.getTotalElements());
-        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",liseDto);
+        CompanyListResponseDTO liseDto = new CompanyListResponseDTO(companiesList, companies.getTotalPages(), companies.getNumber(), (int) companies.getTotalElements());
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", liseDto);
     }
 
     public ResponseEntity<ApiResponse<CompanyResponseDTO>> createCompany(Company company) {
@@ -43,6 +44,7 @@ public class CompanyService {
             return ApiResponse.buildResponse(HttpStatus.CONFLICT, false, "Company Name Already Exists", new CompanyResponseDTO(companyRepository.findByName(company.getName())));
         return ApiResponse.buildResponse(HttpStatus.CREATED, true, "Company Added Successfully", new CompanyResponseDTO(companyRepository.save(company)));
     }
+
     public boolean nameExists(String name) {
         return companyRepository.findByName(name) != null;
     }
@@ -65,6 +67,7 @@ public class CompanyService {
         // Update fields
         existingCompany.setName(input.getName());
         companyRepository.save(existingCompany);
-        return ApiResponse.buildResponse(HttpStatus.OK, true, "Company Updated Successfully", new CompanyResponseDTO(existingCompany));    }
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "Company Updated Successfully", new CompanyResponseDTO(existingCompany));
+    }
 
 }

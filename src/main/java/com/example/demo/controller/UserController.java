@@ -28,14 +28,15 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<ApiResponse<User>> updateUser(@RequestBody User user) {
-        return userService.updateUser(user);
+    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(@RequestParam Integer id, @RequestBody User user) {
+        return userService.updateUser(id, user);
     }
 
     @DeleteMapping
     public ResponseEntity<ApiResponse<UserResponseDTO>> deleteUser(@RequestParam Integer id) {
         return userService.delete(id);
     }
+
     @GetMapping("/deleted")
     public ResponseEntity<ApiResponse<UserListResponseDTO>> getDeletedUsers(Pageable pageable) {
         return userService.getDeletedUsers(pageable);

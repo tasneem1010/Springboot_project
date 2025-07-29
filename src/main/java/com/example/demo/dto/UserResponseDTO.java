@@ -14,15 +14,14 @@ public class UserResponseDTO {
     int id;
     String name;
     String email;
-    Instant created_date;
-    Instant updated_date;
+    Instant createdDate;
+    Instant updatedDate;
 
     public UserResponseDTO(User user) {
-            UserResponseDTO userResponseDTO = new UserResponseDTO();
-            userResponseDTO.setId(user.getId());
-            userResponseDTO.setName(user.getName());
-            userResponseDTO.setEmail(user.getEmail());
-            userResponseDTO.setCreated_date(user.getCreatedDate());
-            userResponseDTO.setUpdated_date(user.getUpdatedDate());
+        this.id = user.getId();
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.createdDate = user.getCreatedDate();
+        this.updatedDate = user.getUpdatedDate();
     }
 }
