@@ -20,7 +20,7 @@ public class Company {
 
     private String name;
 
-    @OneToMany()
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     private List<User> users;
 

@@ -4,6 +4,7 @@ import com.example.demo.dto.*;
 import com.example.demo.model.Company;
 import com.example.demo.model.Company;
 import com.example.demo.repository.CompanyRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -13,12 +14,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CompanyService {
     CompanyRepository companyRepository;
-
-    public CompanyService(CompanyRepository companyRepository) {
-        this.companyRepository = companyRepository;
-    }
 
     public CompanyListResponseDTO findAll(Pageable pageable) {
         Page<Company> companies = companyRepository.findAll(pageable);

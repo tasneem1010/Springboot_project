@@ -5,19 +5,17 @@ import com.example.demo.dto.UserListResponseDTO;
 import com.example.demo.dto.UserResponseDTO;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<UserListResponseDTO>> getUsers(@RequestParam(required = false) String name, Pageable pageable) {
@@ -30,7 +28,7 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(@RequestBody User user) {
+    public ResponseEntity<ApiResponse<User>> updateUser(@RequestBody User user) {
         return userService.updateUser(user);
     }
 

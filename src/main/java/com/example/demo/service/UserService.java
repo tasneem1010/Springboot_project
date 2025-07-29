@@ -5,6 +5,7 @@ import com.example.demo.dto.UserListResponseDTO;
 import com.example.demo.dto.UserResponseDTO;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -14,20 +15,15 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
     public UserListResponseDTO findAll(Pageable pageable) {
         // Get all users that are not deleted
-        Page<User> users = userRepository.findByDeleted(false, pageable);
-        List<UserResponseDTO> userResponseDTOs = users.getContent().stream().map(UserResponseDTO::new).toList();
-        return new UserListResponseDTO(userResponseDTOs, users.getTotalPages(), users.getNumber(), (int) users.getTotalElements());
-//        return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", liseDto);
+
+        return userRepository.findByDeleted(false,pageable);
     }
 
     public ResponseEntity<ApiResponse<UserResponseDTO>> createUser(User user) {
@@ -57,7 +53,7 @@ public class UserService {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Name", null);
         }
         // Check if email is being changed and if new email already exists for another user
-        User userWithEmail = userRepository.findByEmail(input.getEmail());
+        UserResponseDTO userWithEmail = userRepository.findByEmail(input.getEmail());
         if (userWithEmail != null && userWithEmail.getId() != input.getId()) {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Email Already Exists", null);
         }
