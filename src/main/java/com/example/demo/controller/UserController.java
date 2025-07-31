@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ApiResponse;
+import com.example.demo.dto.CompanyResponseDTO;
 import com.example.demo.dto.UserListResponseDTO;
 import com.example.demo.dto.UserResponseDTO;
 import com.example.demo.model.User;
@@ -23,11 +24,6 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserListResponseDTO>> getUsers(@RequestParam(required = false) String name, Pageable pageable) {
         return userService.findUserByName(name, pageable);
     }
-    @GetMapping("/me")
-    public ResponseEntity<ApiResponse<Map<String,String>>> getCurrentUser() {
-        return userService.getCurrentUserّInfo();
-    }
-
     @PostMapping
     public ResponseEntity<ApiResponse<UserResponseDTO>> createUser(@RequestBody User user) {
         return userService.createUser(user);
@@ -46,5 +42,13 @@ public class UserController {
     @GetMapping("/deleted")
     public ResponseEntity<ApiResponse<UserListResponseDTO>> getDeletedUsers(Pageable pageable) {
         return userService.getDeletedUsers(pageable);
+    }
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<Map<String,String>>> getCurrentUser() {
+        return userService.getCurrentUserّInfo();
+    }
+    @GetMapping("/me/company")
+    public ResponseEntity<ApiResponse<String>> getCurrentUserCompany() {
+        return userService.getCompanyName();
     }
 }

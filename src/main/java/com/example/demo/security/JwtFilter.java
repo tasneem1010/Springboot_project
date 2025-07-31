@@ -2,6 +2,7 @@ package com.example.demo.security;
 
 import java.io.IOException;
 
+import com.example.demo.dto.UserResponseDTO;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -52,12 +53,12 @@ public class JwtFilter extends OncePerRequestFilter {
         User user = userRepository.findById(userId.intValue());
 
         if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            CustomUserDetails userDetails = new CustomUserDetails(user.getId(), user.getEmail(), user.getPassword());
-
+            //TODO is this right?
+            // store all user info in spring context
+            UserResponseDTO userDetails = new UserResponseDTO(user);
             // authenticated user
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities()
-            );
+                    userDetails, null, null);
             // add info to the token ex. session id
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             // set the authenticated user to spring context

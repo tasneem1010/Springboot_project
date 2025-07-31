@@ -16,6 +16,7 @@ public class UserResponseDTO {
     String email;
     Instant createdDate;
     Instant updatedDate;
+    String companyName;
 
     public UserResponseDTO(User user) {
         this.id = user.getId();
@@ -23,5 +24,6 @@ public class UserResponseDTO {
         this.email = user.getEmail();
         this.createdDate = user.getCreatedDate();
         this.updatedDate = user.getUpdatedDate();
+        this.companyName=user.getCompany().getName();
     }
 }

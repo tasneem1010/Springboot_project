@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.ApiResponse;
+import com.example.demo.dto.CompanyResponseDTO;
 import com.example.demo.dto.UserListResponseDTO;
 import com.example.demo.dto.UserResponseDTO;
 import com.example.demo.model.User;
@@ -105,12 +106,16 @@ public class UserService {
 
     public ResponseEntity<ApiResponse<Map<String, String>>> getCurrentUserّInfo() {
         Map<String,String> map = new HashMap<>();
-        CustomUserDetails userDetails = getCurrentUser();
+        UserResponseDTO userDetails = getCurrentUser();
         map.put("id", String.valueOf(userDetails.getId()));
         map.put("email",userDetails.getEmail());
         return ApiResponse.buildResponse(HttpStatus.OK,true,"User Info",map);
     }
-    public CustomUserDetails getCurrentUser(){
-        return (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public UserResponseDTO getCurrentUser(){
+        return (UserResponseDTO)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    public ResponseEntity<ApiResponse<String>> getCompanyName() {
+        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",getCurrentUser().getCompanyName());
     }
 }
