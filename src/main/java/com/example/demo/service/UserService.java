@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -100,7 +103,14 @@ public class UserService {
         return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", liseDto);
     }
 
-    public CustomUserDetails getCurrentUser() {
-        return (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity<ApiResponse<Map<String, String>>> getCurrentUserّInfo() {
+        Map<String,String> map = new HashMap<>();
+        CustomUserDetails userDetails = getCurrentUser();
+        map.put("id", String.valueOf(userDetails.getId()));
+        map.put("email",userDetails.getEmail());
+        return ApiResponse.buildResponse(HttpStatus.OK,true,"User Info",map);
+    }
+    public CustomUserDetails getCurrentUser(){
+        return (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
