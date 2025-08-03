@@ -23,16 +23,14 @@ public class CompanyService {
         Page<Company> companies = companyRepository.findAll(pageable);
         List<CompanyDTO> companiesList = companies.getContent().stream().map(CompanyDTO::new).toList();
         return new CompanyListDTO(companiesList, companies.getTotalPages(), companies.getNumber(), (int) companies.getTotalElements());
-//        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",liseDto);
     }
 
     public ResponseEntity<ApiResponse<CompanyListDTO>> findCompanyByName(String name, Pageable pageable) {
         if (name == null) {
             return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", findAll(pageable));
         }
-        Page<Company> companies = companyRepository.findByName(name, pageable);
-        List<CompanyDTO> companiesList = companies.getContent().stream().map(CompanyDTO::new).toList();
-        CompanyListDTO liseDto = new CompanyListDTO(companiesList, companies.getTotalPages(), companies.getNumber(), (int) companies.getTotalElements());
+        Page<CompanyDTO> companies = companyRepository.findByName(name, pageable);
+        CompanyListDTO liseDto = new CompanyListDTO(companies.getContent(), companies.getTotalPages(), companies.getNumber(), (int) companies.getTotalElements());
         return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", liseDto);
     }
 

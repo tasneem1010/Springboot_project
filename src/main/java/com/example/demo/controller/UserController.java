@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -21,7 +23,6 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserListDTO>> getUsers(@RequestParam(required = false) String name, Pageable pageable) {
         return userService.findUserByName(name, pageable);
     }
-
     @PostMapping
     public ResponseEntity<ApiResponse<UserDTO>> createUser(@RequestBody User user) {
         return userService.createUser(user);
@@ -40,5 +41,13 @@ public class UserController {
     @GetMapping("/deleted")
     public ResponseEntity<ApiResponse<UserListDTO>> getDeletedUsers(Pageable pageable) {
         return userService.getDeletedUsers(pageable);
+    }
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<Map<String,String>>> getCurrentUser() {
+        return userService.getCurrentUserّInfo();
+    }
+    @GetMapping("/me/company")
+    public ResponseEntity<ApiResponse<String>> getCurrentUserCompany() {
+        return userService.getCompanyName();
     }
 }

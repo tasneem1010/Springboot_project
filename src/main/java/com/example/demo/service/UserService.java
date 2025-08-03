@@ -5,7 +5,6 @@ import com.example.demo.dto.UserListDTO;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -100,7 +102,18 @@ public class UserService {
         return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", liseDto);
     }
 
-    public CustomUserDetails getCurrentUser() {
-        return (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity<ApiResponse<Map<String, String>>> getCurrentUserّInfo() {
+        Map<String,String> map = new HashMap<>();
+        UserDTO userDetails = getCurrentUser();
+        map.put("id", String.valueOf(userDetails.getId()));
+        map.put("email",userDetails.getEmail());
+        return ApiResponse.buildResponse(HttpStatus.OK,true,"User Info",map);
+    }
+    public UserDTO getCurrentUser(){
+        return (UserDTO)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    public ResponseEntity<ApiResponse<String>> getCompanyName() {
+        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",getCurrentUser().getCompanyName());
     }
 }
