@@ -10,14 +10,14 @@ import java.time.Instant;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponseDTO {
+public class UserDTO {
     int id;
     String name;
     String email;
     Instant createdDate;
     Instant updatedDate;
 
-    public UserResponseDTO(User user) {
+    public UserDTO(User user) {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();

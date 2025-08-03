@@ -1,6 +1,6 @@
 package com.example.demo.repository;
 
-import com.example.demo.dto.UserResponseDTO;
+import com.example.demo.dto.UserDTO;
 import com.example.demo.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,12 +14,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     User findByEmail(String email);
 
-    @Query("select new com.example.demo.dto.UserResponseDTO(u) from com.example.demo.model.User u where u.deleted = :deleted")
-    Page<UserResponseDTO> findByDeleted(@Param("deleted") boolean deleted, Pageable pageable);
+    @Query("select new com.example.demo.dto.UserDTO(u) from com.example.demo.model.User u where u.deleted = :deleted")
+    Page<UserDTO> findByDeleted(@Param("deleted") boolean deleted, Pageable pageable);
 
     User findById(int id);
 
-    @Query("select new com.example.demo.dto.UserResponseDTO(u) from com.example.demo.model.User u where u.deleted = :deleted AND u.name = :name")
-    Page<UserResponseDTO> findByNameAndDeleted(@Param("name") String name, @Param("deleted") Boolean deleted, Pageable pageable);
+    @Query("select new com.example.demo.dto.UserDTO(u) from com.example.demo.model.User u where u.deleted = :deleted AND u.name = :name")
+    Page<UserDTO> findByNameAndDeleted(@Param("name") String name, @Param("deleted") Boolean deleted, Pageable pageable);
 
 }

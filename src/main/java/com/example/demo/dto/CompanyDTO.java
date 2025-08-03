@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompanyResponseDTO {
+public class CompanyDTO {
     int id;
     String name;
 
-    public CompanyResponseDTO(Company company) {
+    public CompanyDTO(Company company) {
         this.id = company.getId();
         this.name = company.getName();
     }

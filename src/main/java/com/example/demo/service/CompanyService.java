@@ -1,8 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.ApiResponse;
-import com.example.demo.dto.CompanyListResponseDTO;
-import com.example.demo.dto.CompanyResponseDTO;
+import com.example.demo.dto.CompanyListDTO;
+import com.example.demo.dto.CompanyDTO;
 import com.example.demo.model.Company;
 import com.example.demo.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,37 +19,37 @@ import java.util.List;
 public class CompanyService {
     private final CompanyRepository companyRepository;
 
-    public CompanyListResponseDTO findAll(Pageable pageable) {
+    public CompanyListDTO findAll(Pageable pageable) {
         Page<Company> companies = companyRepository.findAll(pageable);
-        List<CompanyResponseDTO> companiesList = companies.getContent().stream().map(CompanyResponseDTO::new).toList();
-        return new CompanyListResponseDTO(companiesList, companies.getTotalPages(), companies.getNumber(), (int) companies.getTotalElements());
+        List<CompanyDTO> companiesList = companies.getContent().stream().map(CompanyDTO::new).toList();
+        return new CompanyListDTO(companiesList, companies.getTotalPages(), companies.getNumber(), (int) companies.getTotalElements());
 //        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",liseDto);
     }
 
-    public ResponseEntity<ApiResponse<CompanyListResponseDTO>> findCompanyByName(String name, Pageable pageable) {
+    public ResponseEntity<ApiResponse<CompanyListDTO>> findCompanyByName(String name, Pageable pageable) {
         if (name == null) {
             return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", findAll(pageable));
         }
         Page<Company> companies = companyRepository.findByName(name, pageable);
-        List<CompanyResponseDTO> companiesList = companies.getContent().stream().map(CompanyResponseDTO::new).toList();
-        CompanyListResponseDTO liseDto = new CompanyListResponseDTO(companiesList, companies.getTotalPages(), companies.getNumber(), (int) companies.getTotalElements());
+        List<CompanyDTO> companiesList = companies.getContent().stream().map(CompanyDTO::new).toList();
+        CompanyListDTO liseDto = new CompanyListDTO(companiesList, companies.getTotalPages(), companies.getNumber(), (int) companies.getTotalElements());
         return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", liseDto);
     }
 
-    public ResponseEntity<ApiResponse<CompanyResponseDTO>> createCompany(Company company) {
+    public ResponseEntity<ApiResponse<CompanyDTO>> createCompany(Company company) {
         if (company.getName() == null || company.getName().isEmpty()) {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Name", null);
         }
         if (nameExists(company.getName()))
-            return ApiResponse.buildResponse(HttpStatus.CONFLICT, false, "Company Name Already Exists", new CompanyResponseDTO(companyRepository.findByName(company.getName())));
-        return ApiResponse.buildResponse(HttpStatus.CREATED, true, "Company Added Successfully", new CompanyResponseDTO(companyRepository.save(company)));
+            return ApiResponse.buildResponse(HttpStatus.CONFLICT, false, "Company Name Already Exists", new CompanyDTO(companyRepository.findByName(company.getName())));
+        return ApiResponse.buildResponse(HttpStatus.CREATED, true, "Company Added Successfully", new CompanyDTO(companyRepository.save(company)));
     }
 
     public boolean nameExists(String name) {
         return companyRepository.findByName(name) != null;
     }
 
-    public ResponseEntity<ApiResponse<CompanyResponseDTO>> updateCompany(Company input) {
+    public ResponseEntity<ApiResponse<CompanyDTO>> updateCompany(Company input) {
         // Check if company exists
         Company existingCompany = companyRepository.findById(input.getId());
         if (existingCompany == null) {
@@ -67,7 +67,7 @@ public class CompanyService {
         // Update fields
         existingCompany.setName(input.getName());
         companyRepository.save(existingCompany);
-        return ApiResponse.buildResponse(HttpStatus.OK, true, "Company Updated Successfully", new CompanyResponseDTO(existingCompany));
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "Company Updated Successfully", new CompanyDTO(existingCompany));
     }
 
 }

@@ -9,8 +9,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CompanyListResponseDTO {
-    List<CompanyResponseDTO> companies;
+public class CompanyListDTO {
+    List<CompanyDTO> companies;
     int totalPages;
     int currentPage;
     int totalElements;
