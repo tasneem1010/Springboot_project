@@ -21,9 +21,8 @@ public class CompanyService {
     private final UserRepository userRepository;
 
     public CompanyListDTO findAll(Pageable pageable) {
-        Page<Company> companies = companyRepository.findAll(pageable);
-        List<CompanyDTO> companiesList = companies.getContent().stream().map(CompanyDTO::new).toList();
-        return new CompanyListDTO(companiesList, companies.getTotalPages(), companies.getNumber(), (int) companies.getTotalElements());
+        Page<CompanyDTO> companies = companyRepository.getAll(pageable);
+        return new CompanyListDTO(companies.getContent(), companies.getTotalPages(), companies.getNumber(), (int) companies.getTotalElements());
     }
 
     public ResponseEntity<ApiResponse<CompanyListDTO>> findCompanyByName(String name, Pageable pageable) {

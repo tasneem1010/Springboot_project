@@ -11,6 +11,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CompanyRepository extends JpaRepository<Company, Integer> {
 
+    @Query("select new com.example.demo.dto.CompanyDTO(c) from com.example.demo.model.Company c")
+    Page<CompanyDTO> getAll(Pageable pageable);
+
     @Query("select new com.example.demo.dto.CompanyDTO(c) from com.example.demo.model.Company c where c.name = :name")
     Page<CompanyDTO> findByName(String name, Pageable pageable);
 
