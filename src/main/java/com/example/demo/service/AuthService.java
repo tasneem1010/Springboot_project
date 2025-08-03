@@ -52,22 +52,20 @@ public class AuthService {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST,false, ex.getMessage(), null);
         }
     }
-
-
     public ResponseEntity<ApiResponse<String>> register(User user) {
         try {
             if (userRepository.findByEmail(user.getEmail()) != null) {
-                return ResponseEntity.badRequest().body(new ApiResponse<>(false, "User already exists", null));
+                return ApiResponse.buildResponse(HttpStatus.CONFLICT,false, "User already exists", null);
             }
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             Company company = companyRepository.findById(user.getCompany().getId());
             if (company == null || !company.equals(user.getCompany())) {
-                return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Registration failed, Company does not exist", null));
+                return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST,false, "Registration failed, Company does not exist", null);
             }
             User savedUser = userRepository.save(user);
-            return ResponseEntity.ok(new ApiResponse<>(true, "User registered successfully", "User ID: " + savedUser.getId()));
+            return ApiResponse.buildResponse(HttpStatus.OK,true, "User registered successfully", "User ID: " + savedUser.getId());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Registration failed: "+ e.getMessage(), null));
+            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST,false, "Registration failed: "+ e.getMessage(), null);
         }
     }
 }
