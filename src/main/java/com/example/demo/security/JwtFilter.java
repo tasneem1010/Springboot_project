@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -21,7 +20,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final TokenManager tokenManager;
-    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -48,20 +46,21 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        
-        User user = userRepository.findById(userId.intValue());
 
-        if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            //TODO is this right?
-            // store all user info in spring context
-            UserDTO userDetails = new UserDTO(user);
+        UserDTO user = tokenManager.extractUser(token);
+
+        // if user is not authenticated
+        if (user!=null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
             // authenticated user
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, null);
-            // add info to the token ex. session id
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    user, null,null);
             // set the authenticated user to spring context
-            // SecurityContextHolder.getContext().getAuthentication() will return this user
+            // SecurityContextHolder.getContext().getAuthentication() will return user dto
+            System.out.println("Token: " + token);
+            System.out.println("UserID: " + userId);
+            System.out.println("Authenticated user: " + user.getEmail());
+
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 

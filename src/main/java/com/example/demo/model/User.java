@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.example.demo.model.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,5 +29,11 @@ public class User{
     @ManyToOne()
     @JoinColumn(name = "company_id")
     private Company company;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('PENDING', 'APPROVED', 'REJECTED')")
+    private UserStatus status;
+
+
 }
 
