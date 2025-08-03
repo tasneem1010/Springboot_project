@@ -31,8 +31,8 @@ public class User{
     private Company company;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('PENDING', 'APPROVED', 'REJECTED')")
-    private UserStatus status;
+    @Column(columnDefinition = "ENUM('PENDING', 'APPROVED', 'REJECTED')", nullable = false)
+    private UserStatus status =  UserStatus.PENDING; // since java does not allow enum to be null
 
 
 }

@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.ApiResponse;
 import com.example.demo.dto.UserDTO;
+import com.example.demo.model.Company;
 import com.example.demo.model.User;
 import com.example.demo.repository.CompanyRepository;
 import com.example.demo.repository.UserRepository;
@@ -59,13 +60,14 @@ public class AuthService {
                 return ResponseEntity.badRequest().body(new ApiResponse<>(false, "User already exists", null));
             }
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            if (companyRepository.findById(user.getCompany().getId()) == null) {
+            Company company = companyRepository.findById(user.getCompany().getId());
+            if (company == null || !company.equals(user.getCompany())) {
                 return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Registration failed, Company does not exist", null));
             }
             User savedUser = userRepository.save(user);
             return ResponseEntity.ok(new ApiResponse<>(true, "User registered successfully", "User ID: " + savedUser.getId()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Registration failed", null));
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Registration failed: "+ e.getMessage(), null));
         }
     }
 }

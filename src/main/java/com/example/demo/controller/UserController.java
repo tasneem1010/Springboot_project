@@ -1,11 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ApiResponse;
-import com.example.demo.dto.UserListDTO;
 import com.example.demo.dto.UserDTO;
+import com.example.demo.dto.UserListDTO;
 import com.example.demo.dto.UserPatchDTO;
 import com.example.demo.model.User;
-import com.example.demo.model.enums.UserStatus;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +29,7 @@ public class UserController {
         return userService.patchUser(id, user);
     }
     @PostMapping
-    public ResponseEntity<ApiResponse<UserDTO>> createUser(@RequestBody User user) {
+    public ResponseEntity<ApiResponse<UserDTO>> createUser( @RequestBody User user) {
         return userService.createUser(user);
     }
 
