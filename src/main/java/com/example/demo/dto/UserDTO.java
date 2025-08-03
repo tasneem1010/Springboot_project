@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 import com.example.demo.model.User;
+import com.example.demo.model.enums.UserStatus;
 import com.example.demo.security.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class UserDTO {
     private Instant createdDate;
     private Instant updatedDate;
     private boolean deleted;
+    private UserStatus status;
 
 
     public UserDTO(User user) {
@@ -30,6 +32,7 @@ public class UserDTO {
         this.createdDate = user.getCreatedDate();
         this.updatedDate = user.getUpdatedDate();
         this.deleted = user.isDeleted();
+        this.status = user.getStatus();
     }
     public UserDTO(Claims claims) {
         this.id = (Integer) claims.get("id");
@@ -40,6 +43,7 @@ public class UserDTO {
         this.createdDate = createdDateStr != null ? Instant.parse(createdDateStr) : null;
         this.updatedDate = updatedDateStr != null ? Instant.parse(updatedDateStr) : null;
         this.deleted = (Boolean) claims.get("deleted");
+        // TODO add company to claims
     }
 
 }

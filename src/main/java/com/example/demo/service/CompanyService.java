@@ -1,10 +1,10 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.ApiResponse;
-import com.example.demo.dto.CompanyListDTO;
-import com.example.demo.dto.CompanyDTO;
+import com.example.demo.dto.*;
 import com.example.demo.model.Company;
+import com.example.demo.model.enums.UserStatus;
 import com.example.demo.repository.CompanyRepository;
+import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CompanyService {
     private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
 
     public CompanyListDTO findAll(Pageable pageable) {
         Page<Company> companies = companyRepository.findAll(pageable);
@@ -68,4 +69,13 @@ public class CompanyService {
         return ApiResponse.buildResponse(HttpStatus.OK, true, "Company Updated Successfully", new CompanyDTO(existingCompany));
     }
 
+    public ResponseEntity<ApiResponse<UserListDTO>> getUsersByStatus(int id, UserStatus status, Pageable pageable) {
+        Page<UserDTO> users;
+        if (status == null) {
+            users = userRepository.findByCompany(id, pageable);
+        } else {
+            users = userRepository.findByCompanyAndStatus(id, status, pageable);
+        }
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", new UserListDTO(users.getContent(), users.getTotalPages(), users.getNumber(), (int) users.getTotalElements()));
+    }
 }

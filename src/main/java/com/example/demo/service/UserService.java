@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.ApiResponse;
 import com.example.demo.dto.UserListDTO;
 import com.example.demo.dto.UserDTO;
+import com.example.demo.dto.UserPatchDTO;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -114,6 +115,44 @@ public class UserService {
     }
 
     public ResponseEntity<ApiResponse<String>> getCompanyName() {
-        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",getCurrentUser().getCompanyName());
+        return ApiResponse.buildResponse(HttpStatus.OK,true,"not yet implemented",null);
     }
+
+    public ResponseEntity<ApiResponse<UserDTO>> patchUser(int id, UserPatchDTO patchDTO) {
+        // fetch existing user
+        User existingUser = userRepository.findById(id);
+        if (existingUser == null) {
+            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Does Not Exist", null);
+        }
+        // validate if email is changing and already exists for another user
+        if (patchDTO.getEmail() != null) {
+            User userWithEmail = userRepository.findByEmail(patchDTO.getEmail());
+            if (userWithEmail != null && userWithEmail.getId() != id) {
+                return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Email Already Exists", null);
+            }
+            existingUser.setEmail(patchDTO.getEmail());
+        }
+        if (patchDTO.getName() != null) {
+            existingUser.setName(patchDTO.getName());
+        }
+        if (patchDTO.getPassword() != null) {
+            existingUser.setPassword(patchDTO.getPassword());
+        }
+        if (patchDTO.getCreatedDate() != null) {
+            existingUser.setCreatedDate(patchDTO.getCreatedDate());
+        }
+        if (patchDTO.getUpdatedDate() != null) {
+            existingUser.setUpdatedDate(patchDTO.getUpdatedDate());
+        }
+        if (patchDTO.getDeleted() != null) {
+            existingUser.setDeleted(patchDTO.getDeleted());
+        }
+        if(patchDTO.getStatus() != null) {
+            existingUser.setStatus(patchDTO.getStatus());
+            System.out.println(existingUser.getStatus());
+        }
+        userRepository.save(existingUser);
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "User Updated Successfully", new UserDTO(existingUser));
+    }
+
 }
