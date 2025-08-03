@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import com.example.demo.dto.UserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -23,32 +24,23 @@ public class TokenManager {
     private String jwtSecret;
 
     // returns generated token on successful authentication by the user
-    public String generateJwtToken(UserDetails userDetails) {
+    public String generateJwtToken(UserDTO userDTO) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("email", userDetails.getUsername());
-        return Jwts
+        claims.put("id", userDTO.getId());
+        claims.put("name", userDTO.getName());
+        claims.put("email", userDTO.getEmail());
+        claims.put("createdDate", userDTO.getCreatedDate().toString());
+        claims.put("updatedDate", userDTO.getUpdatedDate().toString());
+        claims.put("deleted", userDTO.isDeleted());
+                return Jwts
                 .builder()
                 // Custom Claims
                 .setClaims(claims)
                 // Registered claims
-                .setSubject(String.valueOf(userDetails.getUsername()))
+                .setSubject(String.valueOf(userDTO.getId()))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY * 1000))
                 .signWith(getKey(), SignatureAlgorithm.HS256)  // signature part
-                .compact();
-    }
-
-    // Generate token with user ID
-    public String generateJwtToken(UserDetails userDetails, Long userId) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("email", userDetails.getUsername());
-        return Jwts
-                .builder()
-                .setClaims(claims)
-                .setSubject(String.valueOf(userId))
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY * 1000))
-                .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -68,23 +60,6 @@ public class TokenManager {
         }
     }
 
-    // Validates the token with user ID check
-    public boolean validateToken(String token, int userID) {
-        try {
-            final int id = extractUserId(token);
-            if (id == 0) return false;
-            final Claims claims = Jwts
-                    .parserBuilder()
-                    .setSigningKey(getKey())
-                    .build()
-                    .parseClaimsJws(token).getBody();
-            boolean isTokenExpired = claims.getExpiration().before(new Date());
-            return (id == userID) && !isTokenExpired;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     // get user id from sub claim
     public Integer extractUserId(String token) {
         try {
@@ -99,22 +74,21 @@ public class TokenManager {
             return null; // return null for invalid tokens
         }
     }
-
-    // get email from token
-    public String getEmailFromToken(String token) throws NumberFormatException {
-        try {
+    // get user from token claims
+    public UserDTO extractUser(String token) {
+        try{
             Claims claims = Jwts
                     .parserBuilder()
                     .setSigningKey(getKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-            return claims.get("email").toString();
-        } catch (Exception e) {
+            return new UserDTO(claims);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
             return null;
         }
     }
-
     // create a signing key based on secret
     private Key getKey() {
         // decode base 64 string to a byte array

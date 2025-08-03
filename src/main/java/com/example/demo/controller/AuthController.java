@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ApiResponse;
+import com.example.demo.dto.UserDTO;
 import com.example.demo.model.User;
 
 import com.example.demo.service.AuthService;
@@ -18,7 +19,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<Map<String, String>>> login(@RequestBody Map<String, String> loginRequest) {
+    public ResponseEntity<ApiResponse<UserDTO>> login(@RequestBody Map<String, String> loginRequest) {
        return authService.login(loginRequest);
     }
 
