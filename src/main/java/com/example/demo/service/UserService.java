@@ -1,12 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.ApiResponse;
-import com.example.demo.dto.CompanyResponseDTO;
-import com.example.demo.dto.UserListResponseDTO;
-import com.example.demo.dto.UserResponseDTO;
+import com.example.demo.dto.UserListDTO;
+import com.example.demo.dto.UserDTO;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,23 +22,23 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserListResponseDTO findAll(Pageable pageable) {
+    public UserListDTO findAll(Pageable pageable) {
         // Get all users that are not deleted
-        Page<UserResponseDTO> users = userRepository.findByDeleted(false, pageable);
-        return new UserListResponseDTO(users.getContent(), users.getTotalPages(), users.getNumber(), (int) users.getTotalElements());
+        Page<UserDTO> users = userRepository.findByDeleted(false, pageable);
+        return new UserListDTO(users.getContent(), users.getTotalPages(), users.getNumber(), (int) users.getTotalElements());
     }
 
-    public ResponseEntity<ApiResponse<UserResponseDTO>> createUser(User user) {
+    public ResponseEntity<ApiResponse<UserDTO>> createUser(User user) {
         //TODO hash password
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Email", null);
         }
         if (emailExists(user))
-            return ApiResponse.buildResponse(HttpStatus.CONFLICT, false, "User Already Exists", new UserResponseDTO(userRepository.findByEmail(user.getEmail())));
-        return ApiResponse.buildResponse(HttpStatus.CREATED, true, "User Added Successfully", new UserResponseDTO(userRepository.save(user)));
+            return ApiResponse.buildResponse(HttpStatus.CONFLICT, false, "User Already Exists", new UserDTO(userRepository.findByEmail(user.getEmail())));
+        return ApiResponse.buildResponse(HttpStatus.CREATED, true, "User Added Successfully", new UserDTO(userRepository.save(user)));
     }
 
-    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(int id, User input) {
+    public ResponseEntity<ApiResponse<UserDTO>> updateUser(int id, User input) {
         // Check if user exists
         User existingUser = userRepository.findById(id);
         if (existingUser == null) {
@@ -66,15 +64,15 @@ public class UserService {
         existingUser.setName(input.getName());
         existingUser.setEmail(input.getEmail());
         userRepository.save(existingUser);
-        return ApiResponse.buildResponse(HttpStatus.OK, true, "User Updated Successfully", new UserResponseDTO(existingUser));
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "User Updated Successfully", new UserDTO(existingUser));
     }
 
-    public ResponseEntity<ApiResponse<UserListResponseDTO>> findUserByName(String name, Pageable pageable) {
+    public ResponseEntity<ApiResponse<UserListDTO>> findUserByName(String name, Pageable pageable) {
         if (name == null) {
             return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", findAll(pageable));
         }
-        Page<UserResponseDTO> users = userRepository.findByNameAndDeleted(name, false, pageable);
-        UserListResponseDTO liseDto = new UserListResponseDTO(users.getContent(), users.getTotalPages(), users.getNumber(), (int) users.getTotalElements());
+        Page<UserDTO> users = userRepository.findByNameAndDeleted(name, false, pageable);
+        UserListDTO liseDto = new UserListDTO(users.getContent(), users.getTotalPages(), users.getNumber(), (int) users.getTotalElements());
         return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", liseDto);
     }
 
@@ -86,33 +84,33 @@ public class UserService {
         return userRepository.findById(user.getId()) != null;
     }
 
-    public ResponseEntity<ApiResponse<UserResponseDTO>> delete(int id) {
+    public ResponseEntity<ApiResponse<UserDTO>> delete(int id) {
         User user = userRepository.findById(id);
         if (user != null) {
             if (user.isDeleted())
                 return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Already Deleted", null);
             user.setDeleted(true);
             userRepository.save(user);
-            return ApiResponse.buildResponse(HttpStatus.OK, true, "User Was -Soft- Deleted", new UserResponseDTO(user));
+            return ApiResponse.buildResponse(HttpStatus.OK, true, "User Was -Soft- Deleted", new UserDTO(user));
         }
-        return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Does Not Exist", new UserResponseDTO(user));
+        return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Does Not Exist", new UserDTO(user));
     }
 
-    public ResponseEntity<ApiResponse<UserListResponseDTO>> getDeletedUsers(Pageable pageable) {
-        Page<UserResponseDTO> users = userRepository.findByDeleted(true, pageable);
-        UserListResponseDTO liseDto = new UserListResponseDTO(users.getContent(), users.getTotalPages(), users.getNumber(), (int) users.getTotalElements());
+    public ResponseEntity<ApiResponse<UserListDTO>> getDeletedUsers(Pageable pageable) {
+        Page<UserDTO> users = userRepository.findByDeleted(true, pageable);
+        UserListDTO liseDto = new UserListDTO(users.getContent(), users.getTotalPages(), users.getNumber(), (int) users.getTotalElements());
         return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", liseDto);
     }
 
     public ResponseEntity<ApiResponse<Map<String, String>>> getCurrentUserّInfo() {
         Map<String,String> map = new HashMap<>();
-        UserResponseDTO userDetails = getCurrentUser();
+        UserDTO userDetails = getCurrentUser();
         map.put("id", String.valueOf(userDetails.getId()));
         map.put("email",userDetails.getEmail());
         return ApiResponse.buildResponse(HttpStatus.OK,true,"User Info",map);
     }
-    public UserResponseDTO getCurrentUser(){
-        return (UserResponseDTO)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public UserDTO getCurrentUser(){
+        return (UserDTO)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     public ResponseEntity<ApiResponse<String>> getCompanyName() {

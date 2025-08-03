@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ApiResponse;
-import com.example.demo.dto.CompanyListResponseDTO;
-import com.example.demo.dto.CompanyResponseDTO;
+import com.example.demo.dto.CompanyListDTO;
+import com.example.demo.dto.CompanyDTO;
 import com.example.demo.model.Company;
 import com.example.demo.service.CompanyService;
 import lombok.RequiredArgsConstructor;
@@ -18,17 +18,17 @@ public class CompanyController {
     private final CompanyService companyService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<CompanyListResponseDTO>> getCompanies(@RequestParam(required = false) String name, Pageable pageable) {
+    public ResponseEntity<ApiResponse<CompanyListDTO>> getCompanies(@RequestParam(required = false) String name, Pageable pageable) {
         return companyService.findCompanyByName(name, pageable);
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<CompanyResponseDTO>> createCompany(@RequestBody Company company) {
+    public ResponseEntity<ApiResponse<CompanyDTO>> createCompany(@RequestBody Company company) {
         return companyService.createCompany(company);
     }
 
     @PutMapping
-    public ResponseEntity<ApiResponse<CompanyResponseDTO>> updateCompany(@RequestBody Company company) {
+    public ResponseEntity<ApiResponse<CompanyDTO>> updateCompany(@RequestBody Company company) {
         return companyService.updateCompany(company);
     }
 }
