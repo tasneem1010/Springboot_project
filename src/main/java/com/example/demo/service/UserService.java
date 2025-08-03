@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -22,6 +23,8 @@ import java.util.Map;
 public class UserService {
 
     private final UserRepository userRepository;
+    private  final PasswordEncoder passwordEncoder;
+
 
     public UserListDTO findAll(Pageable pageable) {
         // Get all users that are not deleted
@@ -61,7 +64,7 @@ public class UserService {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Email Already Exists", null);
         }
         // Update fields
-        existingUser.setPassword(input.getPassword()); // TODO: hash password if needed
+        existingUser.setPassword(passwordEncoder.encode(input.getPassword()));
         existingUser.setName(input.getName());
         existingUser.setEmail(input.getEmail());
         userRepository.save(existingUser);
@@ -136,7 +139,7 @@ public class UserService {
             existingUser.setName(patchDTO.getName());
         }
         if (patchDTO.getPassword() != null) {
-            existingUser.setPassword(patchDTO.getPassword());
+            existingUser.setPassword(passwordEncoder.encode(patchDTO.getPassword()));
         }
         if (patchDTO.getCreatedDate() != null) {
             existingUser.setCreatedDate(patchDTO.getCreatedDate());

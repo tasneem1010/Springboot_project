@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.ApiResponse;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.model.User;
+import com.example.demo.repository.CompanyRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.CustomUserDetails;
 import com.example.demo.security.TokenManager;
@@ -27,6 +28,7 @@ public class AuthService {
     private final TokenManager tokenManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CompanyRepository companyRepository;
 
     public ResponseEntity<ApiResponse<UserDTO>> login(Map<String, String> loginRequest) {
         try {
@@ -56,9 +58,10 @@ public class AuthService {
             if (userRepository.findByEmail(user.getEmail()) != null) {
                 return ResponseEntity.badRequest().body(new ApiResponse<>(false, "User already exists", null));
             }
-
-            // encode password
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+            if (companyRepository.findById(user.getCompany().getId()) == null) {
+                return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Registration failed, Company does not exist", null));
+            }
             User savedUser = userRepository.save(user);
             return ResponseEntity.ok(new ApiResponse<>(true, "User registered successfully", "User ID: " + savedUser.getId()));
         } catch (Exception e) {
