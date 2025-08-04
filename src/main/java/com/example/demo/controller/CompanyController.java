@@ -32,9 +32,9 @@ public class CompanyController {
         return companyService.createCompany(company);
     }
 
-    @PutMapping
-    public ResponseEntity<ApiResponse<CompanyDTO>> updateCompany(@RequestBody Company company) {
-        return companyService.updateCompany(company);
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<CompanyDTO>> updateCompany(@RequestParam int id, @RequestBody Company company) {
+        return companyService.updateCompany(id,company);
     }
     @GetMapping("/{id}/users")
     public ResponseEntity<ApiResponse<UserListDTO>> getUsersByStatus(@PathVariable int id, @RequestParam(required = false) UserStatus status, Pageable pageable) {

@@ -47,9 +47,9 @@ public class CompanyService {
         return companyRepository.findByName(name) != null;
     }
 
-    public ResponseEntity<ApiResponse<CompanyDTO>> updateCompany(Company input) {
+    public ResponseEntity<ApiResponse<CompanyDTO>> updateCompany(int id, Company input) {
         // Check if company exists
-        Company existingCompany = companyRepository.findById(input.getId());
+        Company existingCompany = companyRepository.findById(id);
         if (existingCompany == null) {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Company Does Not Exist", null);
         }
@@ -59,7 +59,7 @@ public class CompanyService {
         }
         // Check if name is being changed and if new name already exists for another company
         Company companyWithName = companyRepository.findByName(input.getName());
-        if (companyWithName != null && companyWithName.getId() != input.getId()) {
+        if (companyWithName != null && companyWithName.getId() != id) {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Name Already Exists", null);
         }
         // Update fields
