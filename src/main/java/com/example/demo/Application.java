@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
-//(exclude = {DataSourceAutoConfiguration.class}) for no database testing
 @SpringBootApplication
 public class Application {
 
