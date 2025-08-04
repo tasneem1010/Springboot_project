@@ -40,7 +40,7 @@ public class CompanyController {
     public ResponseEntity<ApiResponse<UserListDTO>> getUsersByStatus(@PathVariable int id, @RequestParam(required = false) UserStatus status, Pageable pageable) {
         return companyService.getUsersByStatus(id,status,pageable);
     }
-    @GetMapping("{id}/usersByStatus")
+    @GetMapping("{id}/statusCounts")
     public ResponseEntity<ApiResponse<List<Object[]>>> countByCompanyAndStatus(@PathVariable int id) {
         return companyService.countByCompanyAndStatus(id);
     }

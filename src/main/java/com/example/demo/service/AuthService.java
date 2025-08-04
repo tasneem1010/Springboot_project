@@ -8,6 +8,7 @@ import com.example.demo.repository.CompanyRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.CustomUserDetails;
 import com.example.demo.security.TokenManager;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,16 +53,18 @@ public class AuthService {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST,false, ex.getMessage(), null);
         }
     }
-    public ResponseEntity<ApiResponse<String>> register(User user) {
+    public ResponseEntity<ApiResponse<String>> register(HttpServletRequest request, User user) {
         try {
             if (userRepository.findByEmail(user.getEmail()) != null) {
                 return ApiResponse.buildResponse(HttpStatus.CONFLICT,false, "User already exists", null);
             }
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            Company company = companyRepository.findById(user.getCompany().getId());
-            if (company == null || !company.equals(user.getCompany())) {
-                return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST,false, "Registration failed, Company does not exist", null);
+            int idFromHeader = Integer.parseInt(request.getHeader("company_id"));
+            Company company = companyRepository.findById(idFromHeader);
+            if (company == null) {
+                return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST,false, "Registration failed, Company id does not exist", null);
             }
+            user.setCompany(company);
             User savedUser = userRepository.save(user);
             return ApiResponse.buildResponse(HttpStatus.OK,true, "User registered successfully", "User ID: " + savedUser.getId());
         } catch (Exception e) {
