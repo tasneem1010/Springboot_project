@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/companies")
 @RequiredArgsConstructor
@@ -37,5 +39,9 @@ public class CompanyController {
     @GetMapping("/{id}/users")
     public ResponseEntity<ApiResponse<UserListDTO>> getUsersByStatus(@PathVariable int id, @RequestParam(required = false) UserStatus status, Pageable pageable) {
         return companyService.getUsersByStatus(id,status,pageable);
+    }
+    @GetMapping("{id}/usersByStatus")
+    public ResponseEntity<ApiResponse<List<Object[]>>> countByCompanyAndStatus(@PathVariable int id) {
+        return companyService.countByCompanyAndStatus(id);
     }
 }

@@ -45,7 +45,7 @@ public class AuthService {
            UserDTO user = new UserDTO(userRepository.findByEmail(userDetails.getUsername()));
            String token = tokenManager.generateJwtToken(user);
 
-            return ApiResponse.buildResponse(HttpStatus.OK,true, "Login successful with token: "+ token,user);
+            return ApiResponse.buildResponse(HttpStatus.OK,true, token,user);
         } catch (BadCredentialsException ex) {
             return ApiResponse.buildResponse(HttpStatus.UNAUTHORIZED,false, "Invalid credentials", null);
         } catch (Exception ex) {

@@ -77,4 +77,7 @@ public class CompanyService {
         }
         return ApiResponse.buildResponse(HttpStatus.OK, true, "Success", new UserListDTO(users.getContent(), users.getTotalPages(), users.getNumber(), (int) users.getTotalElements()));
     }
+    public ResponseEntity<ApiResponse<List<Object[]>>> countByCompanyAndStatus(int id){
+        return ApiResponse.buildResponse(HttpStatus.OK,true,"Success",userRepository.countByCompanyAndStatus(id));
+    }
 }

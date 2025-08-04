@@ -17,16 +17,18 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     User findByEmail(String email);
 
-    @Query("select new com.example.demo.dto.UserDTO(u) from com.example.demo.model.User u where u.deleted = :deleted")
+    @Query("select new com.example.demo.dto.UserDTO(u) from User u where u.deleted = :deleted")
     Page<UserDTO> findByDeleted(@Param("deleted") boolean deleted, Pageable pageable);
 
     User findById(int id);
 
-    @Query("select new com.example.demo.dto.UserDTO(u) from com.example.demo.model.User u where u.deleted = :deleted AND u.name = :name")
+    @Query("select new com.example.demo.dto.UserDTO(u) from User u where u.deleted = :deleted AND u.name = :name")
     Page<UserDTO> findByNameAndDeleted(@Param("name") String name, @Param("deleted") Boolean deleted, Pageable pageable);
 
-    @Query("select new com.example.demo.dto.UserDTO(u) from com.example.demo.model.User u where u.company.id = :id AND u.status = :status")
+    @Query("select new com.example.demo.dto.UserDTO(u) from User u where u.company.id = :id AND u.status = :status")
     Page<UserDTO> findByCompanyAndStatus(@Param("id") int id, @Param("status") UserStatus status, Pageable pageable);
-    @Query("select new com.example.demo.dto.UserDTO(u) from com.example.demo.model.User u where u.company.id = :id")
+    @Query("select new com.example.demo.dto.UserDTO(u) from User u where u.company.id = :id")
     Page<UserDTO> findByCompany(int id, Pageable pageable);
+    @Query("select count(u),u.status from User u where u.company.id = :id group by u.status")
+    List<Object[]> countByCompanyAndStatus(@Param("id") int id);
 }
