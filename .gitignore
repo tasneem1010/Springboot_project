@@ -201,3 +201,6 @@ README.html
 .idea
 .exercism
 *.md
+
+# application properties
+/src/main/resources/application.properties
