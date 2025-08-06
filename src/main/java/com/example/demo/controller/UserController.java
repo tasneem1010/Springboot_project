@@ -24,12 +24,14 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserListDTO>> getUsers(@RequestParam(required = false) String name, Pageable pageable) {
         return userService.findUserByName(name, pageable);
     }
+
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserDTO>> patchUser(@PathVariable int id,@RequestBody UserPatchDTO user) {
+    public ResponseEntity<ApiResponse<UserDTO>> patchUser(@PathVariable int id, @RequestBody UserPatchDTO user) {
         return userService.patchUser(id, user);
     }
+
     @PostMapping
-    public ResponseEntity<ApiResponse<UserDTO>> createUser( @RequestBody User user) {
+    public ResponseEntity<ApiResponse<UserDTO>> createUser(@RequestBody User user) {
         return userService.createUser(user);
     }
 
@@ -47,12 +49,18 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserListDTO>> getDeletedUsers(Pageable pageable) {
         return userService.getDeletedUsers(pageable);
     }
+
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<Map<String,String>>> getCurrentUser() {
+    public ResponseEntity<ApiResponse<Map<String, String>>> getCurrentUser() {
         return userService.getCurrentUserّInfo();
     }
+
     @GetMapping("/me/company")
     public ResponseEntity<ApiResponse<String>> getCurrentUserCompany() {
         return userService.getCompanyName();
     }
+
+
+
+
 }
