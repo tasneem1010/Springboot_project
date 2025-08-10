@@ -1,12 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ApiResponse;
-import com.example.demo.service.OtpService;
-import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
@@ -15,21 +14,19 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PasswordResetController {
 
-    private final OtpService otpService;
-    private final UserService userService;
-
-    @GetMapping()
-    public ResponseEntity<ApiResponse<Object>> sendUserEmail(@RequestParam String email) {
-        return otpService.sendUserEmail(email);
+    @PostMapping("/")
+    public ResponseEntity<ApiResponse> sendUserEmail(@RequestBody Map<String,String> email) {
+        return new RestTemplate().postForEntity("http://localhost:8081/",email,ApiResponse.class);
     }
 
     @PostMapping("/verifyOtp")
-    public ResponseEntity<ApiResponse<Object>> verifyOtp(@RequestBody Map<String, String> otpRequest) {
-            return otpService.validateOtp(otpRequest.get("email"),otpRequest.get("otp"));
-    }
-    @PostMapping("/resetPassword")
-    public ResponseEntity<ApiResponse<Object>> resetPassword(@RequestBody Map<String, String> resetPasswordRequest ) {
-        return userService.resetPassword(resetPasswordRequest.get("email"),resetPasswordRequest.get("password"));
+    public ResponseEntity<ApiResponse> verifyOtp(@RequestBody Map<String, String> otpRequest) {
+        return new RestTemplate().postForEntity("http://localhost:8081/verifyOtp",otpRequest,ApiResponse.class);
     }
 
+    @PostMapping("/resetPassword")
+    public ResponseEntity<ApiResponse> resetPassword(@RequestBody Map<String, String> resetPasswordRequest) {
+        return new RestTemplate().postForEntity("http://localhost:8081/resetPassword",resetPasswordRequest,ApiResponse.class);
+
+    }
 }

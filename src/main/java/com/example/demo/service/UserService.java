@@ -24,7 +24,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private  final PasswordEncoder passwordEncoder;
-    private final OtpService otpService;
 
 
     public UserListDTO findAll(Pageable pageable) {
@@ -159,20 +158,4 @@ public class UserService {
         return ApiResponse.buildResponse(HttpStatus.OK, true, "User Updated Successfully", new UserDTO(existingUser));
     }
 
-    public ResponseEntity<ApiResponse<Object>>  resetPassword(String email, String password) {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "User Does Not Exist", null);
-        }
-        if (!otpService.otpExists(email)){
-            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Otp was not requested", null);
-        }
-        if(!otpService.isOtpVerified(email)){ // checks if verified
-            return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Otp was not verified", null);
-        }
-        user.setPassword(passwordEncoder.encode(password));
-        userRepository.save(user);
-        otpService.clearOtp(email);
-        return ApiResponse.buildResponse(HttpStatus.OK, true, "Password Reset Successfully", null);
-    }
 }
