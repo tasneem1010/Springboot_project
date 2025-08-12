@@ -7,7 +7,6 @@ import com.example.demo.dto.UserListDTO;
 import com.example.demo.model.Company;
 import com.example.demo.model.enums.UserStatus;
 import com.example.demo.service.CompanyService;
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
