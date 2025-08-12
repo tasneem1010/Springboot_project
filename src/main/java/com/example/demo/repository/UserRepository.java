@@ -27,8 +27,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("select new com.example.demo.dto.UserDTO(u) from User u where u.company.id = :id AND u.status = :status")
     Page<UserDTO> findByCompanyAndStatus(@Param("id") int id, @Param("status") UserStatus status, Pageable pageable);
+
     @Query("select new com.example.demo.dto.UserDTO(u) from User u where u.company.id = :id")
     Page<UserDTO> findByCompany(int id, Pageable pageable);
+
     @Query("select count(u),u.status from User u where u.company.id = :id group by u.status")
     List<Object[]> countByCompanyAndStatus(@Param("id") int id);
+
+    @Query("select avg(count) from (select count(u) as count from User u group by u.company.id)")
+    double averageUsersPerCompany();
 }
