@@ -1,8 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.ApiResponse;
-import com.example.demo.dto.UserListDTO;
 import com.example.demo.dto.UserDTO;
+import com.example.demo.dto.UserListDTO;
 import com.example.demo.dto.UserPatchDTO;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class UserService {
 
     private final UserRepository userRepository;
-    private  final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
 
     public UserListDTO findAll(Pageable pageable) {
@@ -33,12 +33,12 @@ public class UserService {
     }
 
     public ResponseEntity<ApiResponse<UserDTO>> createUser(User user) {
-        //TODO hash password
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             return ApiResponse.buildResponse(HttpStatus.BAD_REQUEST, false, "Enter a Valid Email", null);
         }
         if (emailExists(user))
             return ApiResponse.buildResponse(HttpStatus.CONFLICT, false, "User Already Exists", new UserDTO(userRepository.findByEmail(user.getEmail())));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return ApiResponse.buildResponse(HttpStatus.CREATED, true, "User Added Successfully", new UserDTO(userRepository.save(user)));
     }
 
@@ -107,18 +107,19 @@ public class UserService {
     }
 
     public ResponseEntity<ApiResponse<Map<String, String>>> getCurrentUserّInfo() {
-        Map<String,String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         UserDTO userDetails = getCurrentUser();
         map.put("id", String.valueOf(userDetails.getId()));
-        map.put("email",userDetails.getEmail());
-        return ApiResponse.buildResponse(HttpStatus.OK,true,"User Info",map);
+        map.put("email", userDetails.getEmail());
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "User Info", map);
     }
-    public UserDTO getCurrentUser(){
-        return (UserDTO)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    public UserDTO getCurrentUser() {
+        return (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     public ResponseEntity<ApiResponse<String>> getCompanyName() {
-        return ApiResponse.buildResponse(HttpStatus.OK,true,"not yet implemented",null);
+        return ApiResponse.buildResponse(HttpStatus.OK, true, "not yet implemented", null);
     }
 
     public ResponseEntity<ApiResponse<UserDTO>> patchUser(int id, UserPatchDTO patchDTO) {
@@ -150,7 +151,7 @@ public class UserService {
         if (patchDTO.getDeleted() != null) {
             existingUser.setDeleted(patchDTO.getDeleted());
         }
-        if(patchDTO.getStatus() != null) {
+        if (patchDTO.getStatus() != null) {
             existingUser.setStatus(patchDTO.getStatus());
             System.out.println(existingUser.getStatus());
         }

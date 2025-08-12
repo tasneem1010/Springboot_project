@@ -29,4 +29,8 @@ public class ApiResponse<T> {
     public static <T> ResponseEntity<ApiResponse<T>> buildResponse(HttpStatus status, boolean success, String message, T data) {
         return ResponseEntity.status(status).body(new ApiResponse<>(success, message, data));
     }
+
+    public static  <T> ResponseEntity<ApiResponse<T>> buildResponse(ApiResponse<T> body, HttpStatus status) {
+        return ResponseEntity.status(status).body(body);
+    }
 }
