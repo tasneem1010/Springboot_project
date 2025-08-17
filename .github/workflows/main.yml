@@ -1,0 +1,54 @@
+name: Deploy Project from Repo
+
+on:
+  push:
+    branches:
+      - main  # triggers on commits to main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: SSH and deploy on server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            mkdir -p ~/project
+            cd ~/project
+
+            # Copy project files from GitHub runner to server (excluding .git)
+            rsync -av --exclude='.git' $GITHUB_WORKSPACE/ ./
+
+            # Export secrets for docker-compose
+            export MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+            export MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            export MYSQL_SERVER_IP=${{ secrets.MYSQL_SERVER_IP }}
+            export EMAIL_SERVICE_SERVER_IP=${{ secrets.EMAIL_SERVICE_SERVER_IP }}
+            export JWT_SECRET=${{ secrets.JWT_SECRET }}
+
+            # Ensure Docker is installed
+            if ! command -v docker &> /dev/null; then
+              curl -fsSL https://get.docker.com -o get-docker.sh
+              sh get-docker.sh
+              sudo usermod -aG docker $USER
+            fi
+
+            # Ensure Docker Compose is installed
+            if ! docker compose version &> /dev/null; then
+              sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+                -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            fi
+
+            # Build Docker image from Dockerfile
+            docker build -t main_app:latest ./demo3
+
+            # Deploy with Docker Compose
+            docker compose up -d --remove-orphans
