@@ -204,3 +204,6 @@ README.html
 
 # application properties
 /src/main/resources/application.properties
+src/main/resources/application-dev.properties
+/out/production/resources/application.properties
+/out/production/resources/application-dev.properties

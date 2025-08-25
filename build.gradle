@@ -5,7 +5,11 @@ plugins {
 }
 
 group = 'com.example'
-version = '0.0.1-SNAPSHOT'
+version = '0.1'
+
+jar {
+    archiveFileName = 'myapp.jar'
+}
 
 java {
 	toolchain {
@@ -32,6 +36,7 @@ dependencies {
 	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
 	implementation 'org.json:json:20240303'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'io.github.regychang:java-faker:0.2.5'
 }
 
 tasks.named('test') {

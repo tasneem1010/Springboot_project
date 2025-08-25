@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  main_app:
+    # build:
+    #   context: ./demo3
+    #   args:
+    #     JAR_FILE: demo-0.1.jar
+    image: taneem101/project:latest
+    container_name: main_app
+    environment:
+      MYSQL_URL: jdbc:mysql://${MYSQL_SERVER_IP}:3306/${MYSQL_DATABASE}
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      EMAIL_SERVICE_URL: http://${EMAIL_SERVICE_SERVER_IP}:8080
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "8080:8080"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

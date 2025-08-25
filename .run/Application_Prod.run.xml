@@ -1,0 +1,20 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Application_Prod" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="prod" />
+    <envs>
+      <env name="MYSQL_URL" value="jdbc:mysql://localhost:3306/Inventory" />
+      <env name="MYSQL_USERNAME" value="root" />
+      <env name="MYSQL_PASSWORD" value="root" />
+      <env name="MAIL_USERNAME" value="tasneemabusra@gmail.com" />
+      <env name="MAIL_PASSWORD" value="yvve ucuf pvuw wxhp" />
+      <env name="JWT_SECRET" value="5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437" />
+    </envs>
+    <module name="demo.main" />
+    <projectPathOnTarget name="projectPathOnTarget" value="/home/ec2-user/app" />
+    <target name="ec2-user@13.61.147.228:22" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.demo.Application" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

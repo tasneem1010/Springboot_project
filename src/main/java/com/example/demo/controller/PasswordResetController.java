@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,10 +21,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PasswordResetController {
 
-    @PostMapping("/")
+    @Value("${emailServiceURL}")
+    private String emailServiceURL;
+
+    @PostMapping("")
     public ResponseEntity sendUserEmail(@RequestBody Map<String, String> email) {
         try {
-            ResponseEntity<ApiResponse> response = new RestTemplate().postForEntity("http://localhost:8081/", email, ApiResponse.class);
+            ResponseEntity<ApiResponse> response = new RestTemplate().postForEntity(emailServiceURL, email, ApiResponse.class);
             return ApiResponse.buildResponse(response.getBody(),(HttpStatus)response.getStatusCode());
         }
         catch (HttpClientErrorException e) {
@@ -35,7 +39,7 @@ public class PasswordResetController {
     @PostMapping("/verifyOtp")
     public <T> ResponseEntity<ApiResponse<T>> verifyOtp(@RequestBody Map<String, String> otpRequest) {
         try {
-            ResponseEntity<ApiResponse> response = new RestTemplate().postForEntity("http://localhost:8081/verifyOtp", otpRequest, ApiResponse.class);
+            ResponseEntity<ApiResponse> response = new RestTemplate().postForEntity(emailServiceURL+"/verifyOtp", otpRequest, ApiResponse.class);
             return ApiResponse.buildResponse(response.getBody(),(HttpStatus)response.getStatusCode());
         }
         catch (HttpClientErrorException e) {
@@ -46,7 +50,7 @@ public class PasswordResetController {
     @PostMapping("/resetPassword")
     public ResponseEntity resetPassword(@RequestBody Map<String, String> resetPasswordRequest) {
         try {
-            ResponseEntity<ApiResponse> response = new RestTemplate().postForEntity("http://localhost:8081/resetPassword", resetPasswordRequest, ApiResponse.class);
+            ResponseEntity<ApiResponse> response = new RestTemplate().postForEntity(emailServiceURL+"/resetPassword", resetPasswordRequest, ApiResponse.class);
             return ApiResponse.buildResponse(response.getBody(),(HttpStatus)response.getStatusCode());
         }
         catch (HttpClientErrorException e) {

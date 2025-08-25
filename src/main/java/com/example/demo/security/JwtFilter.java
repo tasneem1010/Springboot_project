@@ -3,8 +3,6 @@ package com.example.demo.security;
 import java.io.IOException;
 
 import com.example.demo.dto.UserDTO;
-import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
