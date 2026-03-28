@@ -7,7 +7,6 @@ A production-ready RESTful backend built with **Spring Boot 3**, developed durin
 ## Table of Contents
 
 - [About the Project](#about-the-project)
-- [Development Journey](#development-journey)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Features](#features)
@@ -25,7 +24,6 @@ A production-ready RESTful backend built with **Spring Boot 3**, developed durin
   - [Health Check](#health-check)
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Security](#security)
-- [Testing](#testing)
 
 ---
 
@@ -44,26 +42,6 @@ Key concepts practised and applied throughout the project:
 - Integration with an external email microservice for OTP-based password reset
 - Dockerisation with multi-platform image builds
 - Automated CI/CD with GitHub Actions — build, push, deploy, and health-check
-
----
-
-## Development Journey
-
-The project was built incrementally through 15 pull requests. Each phase introduced a new concept or production concern:
-
-| Phase | What was built |
-|---|---|
-| 1 — Core User CRUD | Create user, paginated list, search by name, update |
-| 2 — Lombok | Replaced boilerplate with `@Data`, `@Builder`, `@RequiredArgsConstructor` |
-| 3 — Custom API Response | Introduced `ApiResponse<T>` wrapper with `success`, `message`, `data`, and `timeStamp` fields |
-| 4 — Soft Delete | Added logical deletion and a `/users/deleted` retrieval endpoint |
-| 5 — DTOs | Introduced request/response DTOs for data abstraction, security, and efficiency |
-| 6 — Company Entity | Modelled a `Company` entity with a one-to-many relationship to `User` |
-| 7 — JWT Security | Integrated Spring Security with a JWT filter, `TokenManager`, and `CustomUserDetails`; added `/users/me` and `/users/me/company` endpoints |
-| 8 — User Status | Added `PENDING` / `APPROVED` / `REJECTED` enum and status-based filtering endpoints per company |
-| 9 — Password Reset | OTP-based forgot-password flow delegated to an external email microservice |
-| 10 — Statistics | Added a `/stats` endpoint reporting platform-wide aggregates |
-| 11 — CI/CD | GitHub Actions pipeline: Gradle build → Docker image → Docker Hub push → SSH deploy → liveness health check |
 
 ---
 
@@ -98,10 +76,6 @@ src/
 │   │   └── service/         # Business logic (Auth, User, Company, Stats)
 │   └── resources/
 │       └── application-prod.properties
-└── test/
-    └── java/com/example/demo/
-        ├── service/         # Unit tests — UserService
-        └── ApplicationTests.java
 ```
 
 ---
@@ -342,16 +316,4 @@ All credentials (MySQL, JWT secret, Docker Hub, SSH key) are stored as GitHub Ac
 - All API endpoints except `/auth/**`, `/forgotPassword/**`, and `/ping` require a valid **JWT Bearer token**.
 - The application is **stateless** — no HTTP sessions are maintained server-side.
 - The Docker image runs as a non-root system user (`spring`) to limit the blast radius of container escape.
-- CORS is currently open for all origins; tighten `allowedOriginPatterns` in `SecurityConfig` before going to production.
-
----
-
-## Testing
-
-Run the test suite with:
-
-```bash
-./gradlew test
-```
-
-Tests live in `src/test/java/com/example/demo/` and cover service-layer logic using JUnit 5 and Spring Boot Test.
+- CORS is currently configured to accept requests from **any origin**. Before going to production, update `allowedOriginPatterns` in `SecurityConfig` to list only your frontend's domain (e.g. `https://yourapp.com`) so that browsers block requests from any other website.
