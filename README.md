@@ -316,4 +316,3 @@ All credentials (MySQL, JWT secret, Docker Hub, SSH key) are stored as GitHub Ac
 - All API endpoints except `/auth/**`, `/forgotPassword/**`, and `/ping` require a valid **JWT Bearer token**.
 - The application is **stateless** — no HTTP sessions are maintained server-side.
 - The Docker image runs as a non-root system user (`spring`) to limit the blast radius of container escape.
-- CORS is currently configured to accept requests from **any origin**. Before going to production, update `allowedOriginPatterns` in `SecurityConfig` to list only your frontend's domain (e.g. `https://yourapp.com`) so that browsers block requests from any other website.
